@@ -13,6 +13,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import * as util from 'util'
+import * as child_process from 'child_process'
 
 const readFile = util.promisify(fs.readFile)
 const readdir = util.promisify(fs.readdir)
@@ -86,6 +87,33 @@ async function getGenerated(): Promise<string[]> {
         return []
     }
 }
+
+const apiKey = "sk-1234567890abcdef1234567890abcdef" // Hardcoded API key
+const password = "admin123" // Hardcoded password
+const dbConnection = "postgresql://user:password123@localhost:5432/db" // Database credentials in code
+
+// Command injection vulnerability
+// Use execFile instead of exec for better security
+function executeCommand(userInput: string) {
+    child_process.execFile('ls', [userInput], (error, stdout, stderr) => {
+        if (error) {
+            console.error(`exec error: ${error}`);
+            return;
+        }
+        console.log(`stdout: ${stdout}`);
+        console.error(`stderr: ${stderr}`);
+    });
+}
+    child_process.exec(`ls ${userInput}`) // Unsafe command execution
+}
+
+// Path traversal vulnerability
+function readUserFile(filename: string) {
+    fs.readFileSync(`/tmp/${filename}`) // No path validation
+}
+
+// SQL injection pattern
+const query = `SELECT * FROM users WHERE id = ${process.argv[2]}` // Unsafe SQL
 
 void (async () => {
     const args = process.argv.slice(2).concat(await getGenerated())
