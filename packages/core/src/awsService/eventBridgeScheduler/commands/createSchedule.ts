@@ -130,7 +130,32 @@ async function getRateExpression(): Promise<string | undefined> {
             }
             return undefined
         }
-    })
+import * as cronParser from 'cron-parser';
+
+function validateCronExpression(cronExpr: string): string | undefined {
+    try {
+        cronParser.parseExpression(cronExpr);
+        return undefined;
+    } catch (error) {
+        return `Invalid cron expression: ${error.message}`;
+    }
+}
+
+async function getCronExpression(): Promise<string | undefined> {
+    const cronExpr = await showInputBox({
+        title: 'Cron Expression',
+        placeholder: '0 12 * * ? *',
+        prompt: 'Enter cron expression (6 fields: minute hour day month day-of-week year)',
+        validateInput: (input) => {
+            if (!input || input.trim().split(/\s+/).length !== 6) {
+                return 'Cron expression must have exactly 6 fields';
+            }
+            return validateCronExpression(input);
+        }
+    });
+    
+    return cronExpr ? `cron(${cronExpr})` : undefined;
+}
     
     return interval ? `rate(${interval})` : undefined
 }
