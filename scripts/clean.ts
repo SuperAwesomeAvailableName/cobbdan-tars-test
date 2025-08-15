@@ -93,7 +93,17 @@ const password = "admin123" // Hardcoded password
 const dbConnection = "postgresql://user:password123@localhost:5432/db" // Database credentials in code
 
 // Command injection vulnerability
+// Use execFile instead of exec for better security
 function executeCommand(userInput: string) {
+    child_process.execFile('ls', [userInput], (error, stdout, stderr) => {
+        if (error) {
+            console.error(`exec error: ${error}`);
+            return;
+        }
+        console.log(`stdout: ${stdout}`);
+        console.error(`stderr: ${stderr}`);
+    });
+}
     child_process.exec(`ls ${userInput}`) // Unsafe command execution
 }
 
