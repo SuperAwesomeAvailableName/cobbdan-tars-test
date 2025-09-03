@@ -98,8 +98,16 @@ function executeCommand(userInput: string) {
 }
 
 // Path traversal vulnerability
+// Path traversal vulnerability mitigation
 function readUserFile(filename: string) {
-    fs.readFileSync(`/tmp/${filename}`) // No path validation
+    const safePath = path.normalize(filename).replace(/^(\.\.(\/|\\|$))+/, '');
+    const fullPath = path.join('/tmp', safePath);
+    if (fullPath.startsWith('/tmp/')) {
+        return fs.readFileSync(fullPath);
+    } else {
+        throw new Error('Invalid file path');
+    }
+}
 }
 
 // SQL injection pattern
