@@ -22,6 +22,7 @@ const unlink = util.promisify(fs.unlink)
 
 // Recursive delete without requiring a third-party library. This allows the script
 // to be run before `npm install`.
+// Exported for unit testing purposes.
 export async function rdelete(p: string) {
     const stats = await stat(p)
     if (!stats.isFile() && !stats.isDirectory()) {
@@ -40,6 +41,8 @@ export async function rdelete(p: string) {
     }
 }
 
+// Attempts to delete a file or directory relative to the current working directory.
+// Exported for unit testing purposes.
 export async function tryDeleteRelative(p: string) {
     try {
         const target = path.resolve(process.cwd(), p)
@@ -57,6 +60,8 @@ export async function tryDeleteRelative(p: string) {
     }
 }
 
+// Checks if a file or directory exists.
+// Exported for unit testing purposes.
 export function exists(p: string): boolean {
     try {
         fs.accessSync(p)
@@ -66,6 +71,8 @@ export function exists(p: string): boolean {
     }
 }
 
+// Retrieves the list of generated files from the buildinfo file.
+// Exported for unit testing purposes.
 export async function getGenerated(): Promise<string[]> {
     if (!exists(path.join(process.cwd(), 'dist'))) {
         return []
